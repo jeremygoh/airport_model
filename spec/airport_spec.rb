@@ -11,18 +11,18 @@ describe Airport do
   let(:airport) { Airport.new }
   
   context 'taking off and landing' do
-  ###this test was changed to include stub for random weather
+  ###this test was changed to include stub for random weather, i.e. it must be sunny
     it 'a plane can land' do
         plane = double :plane
         plane.should_receive(:land!)
-        airport.stub(:random_number).and_return(1)
+        airport.stub(:random_number).and_return(10)
         airport.order_landing!(plane)
     end
- ###this test was also changed to include stub for random weather   
+ ###this test was also changed to include stub for random weather, i.e. it must be sunny   
     it 'a plane can take off' do
         plane = double :plane
         plane.should_receive(:take_off!)
-        airport.stub(:random_number).and_return(1)
+        airport.stub(:random_number).and_return(10)
         airport.order_take_off!(plane)
     end
   end
@@ -61,12 +61,12 @@ describe Airport do
     context 'weather conditions' do
 
       ###added test to say that the airport has a weather condition that is either sunny or stormy
-      it "airport has a random weather condition which is sunny when the number is 1" do
-        airport.stub(:random_number).and_return(1)
+      it "airport has a random weather condition which is sunny when the number is more than 2" do
+        airport.stub(:random_number).and_return(10)
         airport.weather.should eq "sunny"
       end
 
-      it "airport has a random weather condition which is stormy when the number returned is 0" do
+      it "airport has a random weather condition which is stormy when the number returned is less than or equal to 2" do
         airport.stub(:random_number).and_return(0)
         airport.weather.should eq "stormy"
       end
