@@ -7,28 +7,33 @@ require 'plane'
 # It is up to you how many planes can land in the airport and how that is impermented.
 #
 # If the airport is full then no planes can land
+
 describe Airport do
   let(:airport) { Airport.new }
   
   context 'taking off and landing' do
   ###this test was changed to include stub for random weather, i.e. it must be sunny
-    it 'a plane can land' do
-        plane = double :plane
-        plane.should_receive(:land!)
-        airport.stub(:random_number).and_return(10)
-        airport.order_landing!(plane)
-        airport.number_of_landed_planes.should eq 1
-    end
+    
+    context "with good weather and airport has no other planes" do
 
- ###this test was also changed to include stub for random weather, i.e. it must be sunny   
-    it 'a plane can take off' do
-        plane = double :plane
-        plane.should_receive(:take_off!)
-        airport.stub(:random_number).and_return(10)
-        airport.order_take_off!(plane)
-        airport.number_of_landed_planes.should eq 0
-    end
+      it 'a plane can land' do
+          plane = double :plane
+          plane.should_receive(:land!)
+          airport.stub(:random_number).and_return(10)
+          airport.order_landing!(plane)
+          airport.number_of_landed_planes.should eq 1
+      end
 
+   ###this test was also changed to include stub for random weather, i.e. it must be sunny   
+      it 'a plane can take off' do
+          plane = double :plane
+          plane.should_receive(:take_off!)
+          airport.stub(:random_number).and_return(10)
+          airport.order_take_off!(plane)
+          airport.number_of_landed_planes.should eq 0
+      end
+
+    end
  
   end
   
@@ -66,6 +71,7 @@ describe Airport do
     context 'weather conditions' do
 
       ###added test to say that the airport has a weather condition that is either sunny or stormy
+      #random number generated is between 0 and 10
       it "airport has a random weather condition which is sunny when the number is more than 2" do
         airport.stub(:random_number).and_return(10)
         airport.weather.should eq "sunny"
@@ -76,18 +82,23 @@ describe Airport do
         airport.weather.should eq "stormy"
       end
 
+      #the following test also ensures that airport capacity is not altered during the bad weather (since no plane can take off)
       it 'a plane cannot take off when there is a storm brewing' do
         plane = double :plane
         plane.should_not_receive(:take_off!)
-        airport.stub(:random_number).and_return(0)
-        airport.order_take_off!(plane)
+        airport_with_a_plane = Airport.new [plane]
+        airport_with_a_plane.stub(:random_number).and_return(0)
+        airport_with_a_plane.order_take_off!(plane)
+        airport_with_a_plane.number_of_landed_planes.should eq 1
       end
       
+      #the following test also ensures that airport capacity is not altered during bad weather (since no plane can land)
       it 'a plane cannot land in the middle of a storm' do
         plane = double :plane
         plane.should_not_receive(:land!)
         airport.stub(:random_number).and_return(0)
         airport.order_landing!(plane)
+        airport.number_of_landed_planes.should eq 0
       end
     end
   end
@@ -98,9 +109,8 @@ end
 # When we land a plane at the airport, the plane in question should have its status changed to "landed"
 #
 # When the plane takes of from the airport, the plane's status should become "flying"
-describe Plane do
- 
-  let(:plane) { Plane.new }
+describe Plane do 
+let(:plane) { Plane.new }
   
   it 'has a flying status when created' do
     plane.status.should eq "flying"
@@ -111,14 +121,14 @@ describe Plane do
       plane.status.should eq "flying"
   end
 
-##added new test to see if plane can land
+##added new test to see if plane can land (this test is separate and more basic - it doesn't involve the airport/weather)
   it 'can land' do
     plane.land!
     plane.should_not be_in_the_air
     plane.status.should eq "landed"
   end
 
-##created attr_accessor to assign in_the_air as false for this test
+##created attr_accessor to assign @in_the_air as false since the plane starts in the landed position
  context "landed plane" do
   let(:landed_plane){Plane.new}
   it 'can take off' do
@@ -134,7 +144,7 @@ describe Plane do
     landed_plane.take_off!
     landed_plane.status.should eq "flying"
   end
-end
+end #end of describe Plane
 
 end #end of context landed plane
  
@@ -143,76 +153,81 @@ end #end of context landed plane
 # Be careful of the weather, it could be stormy!
 # Check when all the planes have landed that they have the right status "landed"
 # Once all the planes are in the air again, check that they have the status of flying!
-describe "The gand finale (last spec)" do
+describe "The grand finale (last spec)" do
 let(:airport){ Airport.new }
-  it 'all planes can land and all planes can take off' do
-    
-    #so that it's always sunny
-    airport.stub(:random_number).and_return(10)  
 
-    #plane1
-    plane1 = Plane.new
-    airport.order_landing!(plane1)
-    plane1.status.should eq "landed"
+context "airport starts off as empty and the weather is always sunny" do
+    it 'all planes can land and all planes can take off' do
+      
+      #so that it's always sunny
+      airport.stub(:random_number).and_return(10)  
 
-    #plane2
-    plane2 = Plane.new
-    airport.order_landing!(plane2)
-    plane2.status.should eq "landed"
+      ##LANDINGS!!
 
-    #plane3
-    plane3 = Plane.new
-    airport.order_landing!(plane3)
-    plane3.status.should eq "landed"
+        #plane1
+        plane1 = Plane.new
+        airport.order_landing!(plane1)
+        plane1.status.should eq "landed"
 
-    #plane4
-    plane4 = Plane.new
-    airport.order_landing!(plane4)
-    plane4.status.should eq "landed"
+        #plane2
+        plane2 = Plane.new
+        airport.order_landing!(plane2)
+        plane2.status.should eq "landed"
 
-    #plane5
-    plane5 = Plane.new
-    airport.order_landing!(plane5)
-    plane5.status.should eq "landed"
+        #plane3
+        plane3 = Plane.new
+        airport.order_landing!(plane3)
+        plane3.status.should eq "landed"
 
-    # plane6
-    plane6 = Plane.new
-    airport.order_landing!(plane6)
-    plane6.status.should eq "landed"
+        #plane4
+        plane4 = Plane.new
+        airport.order_landing!(plane4)
+        plane4.status.should eq "landed"
 
-    ##airport is now full
-    airport.should be_full
+        #plane5
+        plane5 = Plane.new
+        airport.order_landing!(plane5)
+        plane5.status.should eq "landed"
 
-    ##TAKE OFF!!
+        # plane6
+        plane6 = Plane.new
+        airport.order_landing!(plane6)
+        plane6.status.should eq "landed"
 
-    #plane1
-    airport.order_take_off!(plane1)
-    plane1.status.should eq "flying"
+      ##airport is now full
+      airport.should be_full
 
-     #plane2
-    airport.order_take_off!(plane2)
-    plane2.status.should eq "flying"
+      ##TAKE OFF!!
 
-     #plane3
-    airport.order_take_off!(plane3)
-    plane3.status.should eq "flying"
-    
+        #plane1
+        airport.order_take_off!(plane1)
+        plane1.status.should eq "flying"
 
-     #plane4
-    airport.order_take_off!(plane4)
-    plane4.status.should eq "flying"
+        #plane2
+        airport.order_take_off!(plane2)
+        plane2.status.should eq "flying"
 
-     #plane5
-    airport.order_take_off!(plane5)
-    plane5.status.should eq "flying"
+        #plane3
+        airport.order_take_off!(plane3)
+        plane3.status.should eq "flying"
 
 
-    #plane6
-    airport.order_take_off!(plane6)
-    plane6.status.should eq "flying"
+        #plane4
+        airport.order_take_off!(plane4)
+        plane4.status.should eq "flying"
 
-    #airport is now empty
-    airport.number_of_landed_planes.should eq 0
+        #plane5
+        airport.order_take_off!(plane5)
+        plane5.status.should eq "flying"
 
-  end
+
+        #plane6
+        airport.order_take_off!(plane6)
+        plane6.status.should eq "flying"
+
+      #airport is now empty
+      airport.number_of_landed_planes.should eq 0
+
+    end
+  end  
 end

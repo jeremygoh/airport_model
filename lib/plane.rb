@@ -1,9 +1,16 @@
 class Plane
 attr_accessor :in_the_air
 
+#planes start off in_the_air, i.e with status "flying"
 	def initialize
 		@in_the_air = true
 	end	
+
+	def in_the_air?
+		@in_the_air
+	end
+	
+#descriptive status corresponding to whether it is in the air
 
 	def status
 		if in_the_air?
@@ -13,13 +20,13 @@ attr_accessor :in_the_air
 		end
 	end
 
+#planes are no longer in the air when they land
 	def land!
 		@in_the_air = false
 	end
 
-	def in_the_air?
-		@in_the_air
-	end
+	
+#planes are in the air when they take off
 
 	def take_off!
 		@in_the_air = true
