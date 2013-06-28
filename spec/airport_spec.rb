@@ -38,12 +38,12 @@ describe Airport do
     airport.should_not be_full
   end
 
-##added test for airport is full if capacity of 5 planes is reached
-##capacity is hard coded as 5 planes (it's a small airport!)
+##added test for airport is full if capacity of 6 planes is reached
+##capacity is hard coded as 6 planes (it's a small airport!)
   context "full airport" do
-    let(:full_airport){ Airport.new [:plane, :plane, :plane, :plane, :plane] }
+    let(:full_airport){ Airport.new [:plane, :plane, :plane, :plane, :plane, :plane] }
       
-      it "airport is full if it is at capacity, i.e. has 5 planes" do
+      it "airport is full if it is at capacity, i.e. has 6 planes" do
         full_airport.should be_full
       end
       
@@ -147,6 +147,7 @@ describe "The gand finale (last spec)" do
 let(:airport){ Airport.new }
   it 'all planes can land and all planes can take off' do
     
+    #so that it's always sunny
     airport.stub(:random_number).and_return(10)  
 
     #plane1
@@ -174,14 +175,15 @@ let(:airport){ Airport.new }
     airport.order_landing!(plane5)
     plane5.status.should eq "landed"
 
-  
-    # plane6 -- can't land because the airport is full!
+    # plane6
     plane6 = Plane.new
     airport.order_landing!(plane6)
-    plane6.status.should_not eq "landed"
+    plane6.status.should eq "landed"
 
-    #since airport is full, planes 1 to 5 will now take off
-    ##TAKE OFF!
+    ##airport is now full
+    airport.should be_full
+
+    ##TAKE OFF!!
 
     #plane1
     airport.order_take_off!(plane1)
@@ -194,6 +196,7 @@ let(:airport){ Airport.new }
      #plane3
     airport.order_take_off!(plane3)
     plane3.status.should eq "flying"
+    
 
      #plane4
     airport.order_take_off!(plane4)
@@ -204,15 +207,12 @@ let(:airport){ Airport.new }
     plane5.status.should eq "flying"
 
 
-    ##airport is no longer full, so plane6 can now land
-
-    plane6 = Plane.new
-    airport.order_landing!(plane6)
-    plane6.status.should eq "landed"
-
-    #and plane6 can also now take off
+    #plane6
     airport.order_take_off!(plane6)
     plane6.status.should eq "flying"
+
+    #airport is now empty
+    airport.number_of_landed_planes.should eq 0
 
   end
 end

@@ -5,16 +5,16 @@ include Weather
 	
 	def initialize(planes=[])
 		@planes = planes
-		@capacity = 5
+		@capacity = 6
 	end	
 
 	def order_landing!(plane)
 		if full?
-			"airport is full"
+			"Couldn't land plane as airport is full"
 		elsif weather == "stormy"
 			"Bad weather. Couldn't land plane"
 		else
-			plane.land!
+			plane.land! unless full? || weather=="stormy"
 			@planes << plane
 		end
 	end	
@@ -31,7 +31,7 @@ include Weather
 	def full?
 		@planes.size == @capacity
 	end
-	
+
 
 
 end
