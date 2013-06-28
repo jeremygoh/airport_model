@@ -11,15 +11,18 @@ describe Airport do
   let(:airport) { Airport.new }
   
   context 'taking off and landing' do
+  ###this test was changed to include stub for random weather
     it 'a plane can land' do
         plane = double :plane
         plane.should_receive(:land!)
+        airport.stub(:random_number).and_return(1)
         airport.order_landing!(plane)
     end
-    
+ ###this test was also changed to include stub for random weather   
     it 'a plane can take off' do
         plane = double :plane
         plane.should_receive(:take_off!)
+        airport.stub(:random_number).and_return(1)
         airport.order_take_off!(plane)
     end
   end
@@ -69,9 +72,17 @@ describe Airport do
       end
 
       it 'a plane cannot take off when there is a storm brewing' do
+        plane = double :plane
+        plane.should_not_receive(:take_off!)
+        airport.stub(:random_number).and_return(0)
+        airport.order_take_off!(plane)
       end
       
       it 'a plane cannot land in the middle of a storm' do
+        plane = double :plane
+        plane.should_not_receive(:land!)
+        airport.stub(:random_number).and_return(0)
+        airport.order_landing!(plane)
       end
     end
   end
