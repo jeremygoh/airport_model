@@ -12,12 +12,9 @@ attr_accessor :in_the_air
 	
 #descriptive status corresponding to whether it is in the air
 
+#one line if/else statement added as part of refactoring
 	def status
-		if in_the_air?
-			"flying"
-		else
-			"landed"
-		end
+		return in_the_air? ? "flying" : "landed"
 	end
 
 #planes are no longer in the air when they land
