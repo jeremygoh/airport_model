@@ -9,17 +9,29 @@ include Weather
 	end	
 
 	def order_landing!(plane)
-		plane.land! unless full? || weather == "stormy"
+		if full?
+			"airport is full"
+		elsif weather == "stormy"
+			"Bad weather. Couldn't land plane"
+		else
+			plane.land!
+			@planes << plane
+		end
 	end	
+
+	def number_of_landed_planes
+		@planes.size
+	end
 
 	def order_take_off!(plane)
 		plane.take_off! unless weather == "stormy"
+		@planes.delete(plane)
 	end
 
 	def full?
 		@planes.size == @capacity
 	end
-
+	
 
 
 end
