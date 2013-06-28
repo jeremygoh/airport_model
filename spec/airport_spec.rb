@@ -58,9 +58,14 @@ describe Airport do
     context 'weather conditions' do
 
       ###added test to say that the airport has a weather condition that is either sunny or stormy
-      xit "airport has a random weather condition which is sunny when the number is 1" do
-        airport.weather.stub(:rand).with(2).and_return(1)
+      it "airport has a random weather condition which is sunny when the number is 1" do
+        airport.stub(:random_number).and_return(1)
         airport.weather.should eq "sunny"
+      end
+
+      it "airport has a random weather condition which is stormy when the number returned is 0" do
+        airport.stub(:random_number).and_return(0)
+        airport.weather.should eq "stormy"
       end
 
       it 'a plane cannot take off when there is a storm brewing' do
